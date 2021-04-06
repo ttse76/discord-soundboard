@@ -86,9 +86,6 @@ class Soundboard{
             }
         });
 
-
-
-
         //Helper functions
         const verifyRequest = (command, arg) => {
             if(!blocks.includes(command)){
