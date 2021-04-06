@@ -54,3 +54,6 @@ Currently only `.mp3` files are supported.
 ## I finished the soundboard...now what?
 The service must be running in order for the bot to work in discord. 
 You can set this up on your local machine or a cloud computing service like [Vultr](https://www.vultr.com/?ref=8713720).
+
+## Bugs
+If you encounter any bugs/weird errors, please create an issue [here](https://github.com/ttse76/discord-soundboard/issues).
