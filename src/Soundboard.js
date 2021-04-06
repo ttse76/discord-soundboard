@@ -1,18 +1,28 @@
 const Discord = require('discord.js');
 const utils = require('mundane-utils');
 
-const processJSON = (f) => {
-    const info = require(f);
-
+const processJSON = (blocks, audio) => {
+    let audioFiles = new Map();
+    
+    console.log(blocks);
     console.log('Processing audio info...');
-    characters = info.characters;
-    let audioInfo = info.audio;
-    for(let i = 0; i < characters.length; i++){
-        let char = characters[i];
-        audioFiles.set(char, audioInfo[char]);
+    for(let i = 0; i < blocks.length; i++){
+        let char = blocks[i];
+        audioFiles.set(char, audio[char]);
     }
-    return;
+    return audioFiles;
 };
+
+const verifyRequest = (command, arg) => {
+    if(!characters.includes(command)){
+        return false;
+    }
+    let charAudio = audioFiles.get(command);
+    if(arg && !charAudio.includes(arg)){
+        return false;
+    }
+    return true;
+}
 
 class Soundboard{
     /**
@@ -25,14 +35,17 @@ class Soundboard{
         if(utils.stringIsEmpty(token)){
             throw new Error("Bot token required");  
         }
+        let audioFiles = new Map();
         this.token = token;
         this.prefix = prefix;
         this.info = info;
+        const {blocks, audio} = require('../' + info);
+
         this.client = new Discord.Client();
         this.client.login(this.token);
-        this.client.once('ready', () => {
+        this.client.once('ready', async () => {
             try{
-                //processJSON(this.info);
+                audioFiles = processJSON(blocks, audio);
             }catch(err){
                 throw new Error("JSON unable to be processed");
             }
@@ -58,8 +71,58 @@ class Soundboard{
             if(messageArr.length > 0){
                 arg = messageArr[0];
             }
-            console.log(command);
+            switch(command){
+                case "help":
+                    //generateHelp();
+                    break;
+                default:
+                    if(verifyRequest(command, arg)){
+                        playFile(command, arg, voiceChannel);
+                        return;
+                    }
+                    else{
+                        return message.channel.send('Command not valid');
+                    }   
+            }
         });
+
+
+
+
+        //Helper functions
+        const verifyRequest = (command, arg) => {
+            if(!blocks.includes(command)){
+                return false;
+            }
+            let charAudio = audioFiles.get(command);
+            if(arg && !charAudio.includes(arg)){
+                return false;
+            }
+            return true;
+        }
+
+        const playFile = (block, audio, voiceChannel) => {
+            var audioFile = 'audio/' + block;
+            if(audio){
+                audioFile += '/' + audio + '.mp3';
+            }else{
+                let blockAudioFiles = audioFiles.get(block);
+                let selected = blockAudioFiles[Math.floor(Math.random() * blockAudioFiles.length)]
+                audioFile += '/' + selected + '.mp3';
+            }
+            try{
+                voiceChannel.join().then(connection => {
+                    connection.play(audioFile).on('finish', () => {
+                        voiceChannel.leave();
+                    });
+                    
+                });
+                
+            }catch(err){
+                return message.channel.send(err);
+            }
+        }
+
     }
 }
 
