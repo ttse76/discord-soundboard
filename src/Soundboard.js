@@ -39,7 +39,7 @@ class Soundboard{
         this.token = token;
         this.prefix = prefix;
         this.info = info;
-        const {blocks, audio} = require('./' + info);
+        const {blocks, audio} = require('../../../' + info);
 
         this.client = new Discord.Client();
         this.client.login(this.token);
