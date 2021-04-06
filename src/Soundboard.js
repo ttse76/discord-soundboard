@@ -4,7 +4,6 @@ const utils = require('mundane-utils');
 const processJSON = (blocks, audio) => {
     let audioFiles = new Map();
     
-    console.log(blocks);
     console.log('Processing audio info...');
     for(let i = 0; i < blocks.length; i++){
         let char = blocks[i];
@@ -28,10 +27,11 @@ class Soundboard{
     /**
      * Class for creating soundboard
      * @param token Token from bot page on discord dev portal
+     * @param title Name of the soundboard
      * @param prefix Prefix to trigger audio. Default is -
      * @param info JSON file that contains audio info. Default is info.json
      */
-    constructor(token='', prefix = '-', info='info.json'){
+    constructor(token='', title='', prefix = '-', info='info.json'){
         if(utils.stringIsEmpty(token)){
             throw new Error("Bot token required");  
         }
@@ -54,17 +54,6 @@ class Soundboard{
         this.client.on('message', async message => {
             if(message.author.bot) return;
             if(!message.content.startsWith(prefix)) return;
-            const voiceChannel = message.member.voice.channel;
-            if(!voiceChannel){
-                return message.channel.send("You need to be in a voice channel");
-            }
-
-            const permissions = voiceChannel.permissionsFor(message.client.user);
-            if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-                return message.channel.send(
-                    "Bot requires permissions to join and speak in your voice channel"
-                );
-            }
             const messageArr = message.content.slice(prefix.length).trim().split(' ');
             const command = messageArr.shift().toLowerCase();
             var arg = '';
@@ -73,9 +62,20 @@ class Soundboard{
             }
             switch(command){
                 case "help":
-                    //generateHelp();
+                    message.channel.send(generateHelp());
                     break;
                 default:
+                    const voiceChannel = message.member.voice.channel;
+                    if(!voiceChannel){
+                        return message.channel.send("You need to be in a voice channel");
+                    }
+
+                    const permissions = voiceChannel.permissionsFor(message.client.user);
+                    if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
+                        return message.channel.send(
+                            "Bot requires permissions to join and speak in your voice channel"
+                        );
+                    }
                     if(verifyRequest(command, arg)){
                         playFile(command, arg, voiceChannel);
                         return;
@@ -122,6 +122,28 @@ class Soundboard{
                 return message.channel.send(err);
             }
         }
+
+        const generateHelp = () => {
+            let out = (utils.stringIsEmpty(title)) ? 'Soundboard' : title + ' Soundboard';
+            out += '\nHOW TO USE:'
+            out +='\n' + prefix +'<command> - Play audio';
+            out += '\n' + prefix + '<command> <clip> - Play specific audo clip';
+            out += '\n\nCURRENT COMMANDS';
+            blocks.forEach(block => {
+                let blockAudio = audio[block];
+                out+= '\n' + prefix + block + '\n';
+                let flag = false;
+                blockAudio.forEach(aud => {
+                    if(flag){
+                        out += ', '
+                    }
+                    out += aud;
+                    flag = true;
+                });
+                
+            });
+            return out;
+        };
 
     }
 }
