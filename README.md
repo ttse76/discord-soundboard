@@ -23,7 +23,7 @@ Soundboard(token, title, prefix, info)
 
 `prefix` - Prefix to trigger bot. Default is `-`
 
-`info` - JSON file for the audio information. Default is `./info.json`
+`info` - JSON file for the audio information. Default is `info.json`.
 
 ## info.json
 A JSON file for the audio information is required. By default this file is `info.json` located in the root directory.
