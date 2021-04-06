@@ -1,6 +1,6 @@
 {
   "name": "discord-soundboard",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Framework for creating a soundboard for discord",
   "main": "src/Soundboard.js",
   "homepage": "https://github.com/ttse76/discord-soundboard#Readme",
