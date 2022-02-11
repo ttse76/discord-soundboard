@@ -28,7 +28,7 @@ Soundboard(token, title, prefix, info)
 ## info.json
 A JSON file for the audio information is required. By default this file is `info.json` located in the root directory.
 
-`info.json` is required to have two entires. `blocks` which is an array, and `audio`, which is an object of arrays
+`info.json` is required to have two entires. `blocks` which is an array, and `audio`, which is an object of arrays.
 
 ### Structure
 ```javascript
@@ -39,12 +39,15 @@ A JSON file for the audio information is required. By default this file is `info
   // audio files
   "audio":{
     "category1": ["file1", "file2"],
-    "category2": ["file3"]
+    "category2": ["file3", "file4", "file5"]
   }
 }
 ```
+To better illustrate this, here are some example commands:
+- `-category1` - plays a random audio clip from array `category1`
+- `-category2 file5` will specifically play the audio file named `file5` from `category2`
 
-This file is processed on service start. Any changes to `info.json` requires a restart of the service
+This file is processed on service start. Any changes to `info.json` requires a restart of the service.
 
 ## /audio
 This is where the audio files are saved. By default the `/audio` folder is in the root directory. This cannot be changed. 
